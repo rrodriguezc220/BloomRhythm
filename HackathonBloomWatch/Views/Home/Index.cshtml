@@ -1,0 +1,375 @@
+﻿@{
+    ViewData["Title"] = "BloomRhythm - Track Life's Pulse";
+}
+
+<!-- Hero Section con Video -->
+<div class="position-relative overflow-hidden">
+    <div class="position-relative">
+        <video autoplay loop muted playsinline class="w-100" style="min-height: 90vh; max-height:90vh; object-fit: cover; filter: brightness(0.6);">
+            <source src="~/videos/hero/video-hero.webm" type="video/webm">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="position-absolute top-0 start-0 w-100 h-100">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <span class="badge bg-azure-radiance text-white mb-3 fs-6 fw-normal px-4 py-2 rounded-pill">
+                        <i class="fa-solid fa-satellite-dish me-2"></i>
+                        NASA Earth Observation Data
+                    </span>
+                    <h1 class="display-1 text-zumthor fw-bold mb-4">Track Life's Pulse</h1>
+                    <p class="lead text-gray-chateau mb-4 fs-3">
+                        Monitor global flowering events with Landsat & Sentinel-2 satellite data
+                    </p>
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <a class="btn btn-azure-radiance btn-lg px-5 py-3 rounded-pill shadow-lg" asp-controller="Mapa" asp-action="Index">
+                            <i class="fa-solid fa-map-location-dot me-2"></i>
+                            Explore Interactive Map
+                        </a>
+                        <button class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill" onclick="toggleChatbot()">
+                            <i class="fa-solid fa-comments me-2"></i>
+                            Ask BloomBot
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="bg-bunker-muted py-5">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-3 col-6">
+                <div class="p-4">
+                    <h2 class="display-4 text-salem fw-bold mb-2">626K+</h2>
+                    <p class="text-gray-chateau mb-0">Plants Monitored</p>
+                    <small class="text-muted">Cajamarca Campaign</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-4">
+                    <h2 class="display-4 text-azure-radiance fw-bold mb-2">253</h2>
+                    <p class="text-gray-chateau mb-0">Reforestation Sites</p>
+                    <small class="text-muted">Active Monitoring</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-4">
+                    <h2 class="display-4 text-cream-can fw-bold mb-2">5</h2>
+                    <p class="text-gray-chateau mb-0">Native Species</p>
+                    <small class="text-muted">High Conservation Value</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-4">
+                    <h2 class="display-4 text-sunset-orange fw-bold mb-2">71%</h2>
+                    <p class="text-gray-chateau mb-0">Territory at Risk</p>
+                    <small class="text-muted">Climate Vulnerability</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- What is Solar-Induced Fluorescence Section -->
+<div class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card bg-bunker-muted border-mako shadow-lg">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <span class="badge bg-salem text-white mb-3 fs-6 fw-normal px-4 py-2 rounded-pill">
+                            <i class="fa-solid fa-leaf me-2"></i>
+                            Remote Sensing Science
+                        </span>
+                        <h2 class="display-5 text-zumthor fw-bold mb-3">What is Solar-Induced Fluorescence?</h2>
+                    </div>
+                    <p class="lead text-gray-chateau text-center mb-4">
+                        Growing plants emit a type of light detectable by NASA satellites orbiting hundreds of kilometers above Earth.
+                        This fluorescence signal reveals photosynthetic activity and plant health in real-time.
+                    </p>
+                    <div class="row g-4 mt-4">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <div class="bg-bunker rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fa-solid fa-satellite fs-2 text-azure-radiance"></i>
+                                </div>
+                                <h5 class="text-zumthor">Landsat 8/9</h5>
+                                <p class="text-gray-chateau small mb-0">Bands 8-9 for vegetation analysis</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <div class="bg-bunker rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fa-solid fa-earth-americas fs-2 text-salem"></i>
+                                </div>
+                                <h5 class="text-zumthor">Sentinel-2</h5>
+                                <p class="text-gray-chateau small mb-0">High-resolution monitoring (10-20m)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <div class="bg-bunker rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fa-solid fa-chart-line fs-2 text-cream-can"></i>
+                                </div>
+                                <h5 class="text-zumthor">NDVI Analysis</h5>
+                                <p class="text-gray-chateau small mb-0">Time-series vegetation index</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5 py-5">
+    <!-- Feature 1: Precise Detection -->
+    <div class="row align-items-center mb-5 pb-5">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <span class="badge bg-azure-radiance text-white mb-3 px-3 py-2 rounded-pill">
+                <i class="fa-solid fa-crosshairs me-2"></i>
+                Detection
+            </span>
+            <h3 class="display-6 text-zumthor fw-bold mb-3">Precise Detection</h3>
+            <p class="lead text-gray-chateau mb-4">
+                Leverage NASA's Earth observation data to detect flowering events across the planet with continuously updated maps and datasets.
+            </p>
+            <ul class="list-unstyled">
+                <li class="mb-3">
+                    <i class="fa-solid fa-check-circle text-salem me-2"></i>
+                    <span class="text-gray-chateau">Real-time monitoring with 16-day revisit cycle</span>
+                </li>
+                <li class="mb-3">
+                    <i class="fa-solid fa-check-circle text-salem me-2"></i>
+                    <span class="text-gray-chateau">Multi-spectral analysis (Bands 8-9)</span>
+                </li>
+                <li class="mb-3">
+                    <i class="fa-solid fa-check-circle text-salem me-2"></i>
+                    <span class="text-gray-chateau">Historical archive dating back to 1972</span>
+                </li>
+            </ul>
+        </div>
+        <div class="col-lg-6">
+            <img class="img-fluid rounded-4 shadow-lg" src="~/img/home/deteccion-precisa.webp" alt="Precise detection with satellite imagery" />
+        </div>
+    </div>
+
+    <!-- Feature 2: Advanced Prediction -->
+    <div class="row align-items-center mb-5 pb-5 flex-lg-row-reverse">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <span class="badge bg-cream-can text-dark mb-3 px-3 py-2 rounded-pill">
+                <i class="fa-solid fa-brain me-2"></i>
+                Prediction
+            </span>
+            <h3 class="display-6 text-zumthor fw-bold mb-3">Advanced Prediction</h3>
+            <p class="lead text-gray-chateau mb-4">
+                Utilize climate models to anticipate phenological changes and predict future flowering patterns by region and species.
+            </p>
+            <div class="alert alert-warning border-cream-can bg-transparent mb-4" role="alert">
+                <h6 class="alert-heading text-cream-can">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    Real Impact
+                </h6>
+                <p class="mb-0 small text-gray-chateau">
+                    In 2024, Cajamarca farmers lost <strong>$1.5M USD</strong> due to mandarin flowering desynchronization.
+                    Poland required <strong>€37M</strong> in EU aid after crops flowered a month early at 25°C, followed by destructive -8°C frosts.
+                </p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <img class="img-fluid rounded-4 shadow-lg" src="~/img/home/prediccion-avanzada.webp" alt="Advanced prediction with climate models" />
+        </div>
+    </div>
+
+    <!-- Feature 3: Efficient Management -->
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <span class="badge bg-salem text-white mb-3 px-3 py-2 rounded-pill">
+                <i class="fa-solid fa-leaf me-2"></i>
+                Management
+            </span>
+            <h3 class="display-6 text-zumthor fw-bold mb-3">Efficient Management</h3>
+            <p class="lead text-gray-chateau mb-4">
+                Tools to plan and manage agriculture, biodiversity, and response to environmental events linked to flowering.
+            </p>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <div class="card bg-bunker border-mako h-100">
+                        <div class="card-body">
+                            <i class="fa-solid fa-tractor fs-3 text-salem mb-2"></i>
+                            <h6 class="text-zumthor">Agriculture</h6>
+                            <p class="text-gray-chateau small mb-0">Optimize resources and disease management</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card bg-bunker border-mako h-100">
+                        <div class="card-body">
+                            <i class="fa-solid fa-seedling fs-3 text-azure-radiance mb-2"></i>
+                            <h6 class="text-zumthor">Conservation</h6>
+                            <p class="text-gray-chateau small mb-0">Monitor biodiversity and invasive species</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card bg-bunker border-mako h-100">
+                        <div class="card-body">
+                            <i class="fa-solid fa-chart-pie fs-3 text-cream-can mb-2"></i>
+                            <h6 class="text-zumthor">Phenology</h6>
+                            <p class="text-gray-chateau small mb-0">Track flowering peak shifts over time</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card bg-bunker border-mako h-100">
+                        <div class="card-body">
+                            <i class="fa-solid fa-droplet fs-3 text-sunset-orange mb-2"></i>
+                            <h6 class="text-zumthor">Climate</h6>
+                            <p class="text-gray-chateau small mb-0">Detect desynchronization effects</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <img class="img-fluid rounded-4 shadow-lg" src="~/img/home/gestion-eficiente.webp" alt="Efficient management tools" />
+        </div>
+    </div>
+</div>
+
+<!-- Cajamarca Case Study -->
+<div class="bg-bunker-muted py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-5">
+                    <span class="badge bg-salem text-white mb-3 fs-6 fw-normal px-4 py-2 rounded-pill">
+                        <i class="fa-solid fa-map-pin me-2"></i>
+                        Case Study
+                    </span>
+                    <h2 class="display-5 text-zumthor fw-bold mb-3">Cajamarca Reforestation Campaign</h2>
+                    <p class="lead text-gray-chateau">December 2024 - January 2025</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card bg-bunker border-salem h-100">
+                            <div class="card-body p-4">
+                                <h5 class="text-salem mb-3">
+                                    <i class="fa-solid fa-tree me-2"></i>
+                                    Species Distribution
+                                </h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2 text-gray-chateau">
+                                        <strong class="text-zumthor">Tara:</strong> ~249,000 agroforestry plants
+                                    </li>
+                                    <li class="mb-2 text-gray-chateau">
+                                        <strong class="text-zumthor">Café:</strong> ~245,000 high-value forest plants
+                                    </li>
+                                    <li class="mb-2 text-gray-chateau">
+                                        <strong class="text-zumthor">Eucalipto blanco:</strong> ~78,000 plants
+                                    </li>
+                                    <li class="mb-2 text-gray-chateau">
+                                        <strong class="text-zumthor">Pino insigne:</strong> ~52,000 conservation plants
+                                    </li>
+                                    <li class="mb-0 text-gray-chateau">
+                                        <strong class="text-zumthor">Pino rojo:</strong> ~26,000 plants
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-bunker border-azure-radiance h-100">
+                            <div class="card-body p-4">
+                                <h5 class="text-azure-radiance mb-3">
+                                    <i class="fa-solid fa-chart-area me-2"></i>
+                                    Site Characteristics
+                                </h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2 text-gray-chateau">
+                                        <strong class="text-zumthor">Area Range:</strong> 0.12 - 62.94 hectares per site
+                                    </li>
+                                    <li class="mb-2 text-gray-chateau">
+                                        <strong class="text-zumthor">Peak Activity:</strong> January 2-21, 2025
+                                    </li>
+                                    <li class="mb-2 text-gray-chateau">
+                                        <strong class="text-zumthor">Total Sites:</strong> 253 active locations
+                                    </li>
+                                    <li class="mb-0 text-gray-chateau">
+                                        <strong class="text-zumthor">Monitoring:</strong> Landsat 8/9 & Sentinel-2
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BloomBot AI Assistant Section -->
+<div class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card bg-gradient border-0 shadow-lg" style="background: linear-gradient(135deg, #2f81f7 0%, #2eb94d 100%);">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <i class="fa-solid fa-robot fs-1 text-white mb-3"></i>
+                    </div>
+                    <h2 class="display-6 text-white fw-bold mb-3">Meet BloomBot</h2>
+                    <p class="lead text-white mb-4 opacity-90">
+                        AI-powered assistant trained on NASA Earth observation data, ready to answer your questions about flowering events,
+                        climate impacts, and conservation strategies.
+                    </p>
+                    <button class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow" onclick="toggleChatbot()">
+                        <i class="fa-solid fa-comments me-2"></i>
+                        Start Conversation
+                    </button>
+                    <p class="text-white mt-3 mb-0 small opacity-75">
+                        Powered by DeepSeek R1 • Trained on Llama architecture
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="bg-bunker-muted py-5">
+    <div class="container py-5">
+        <div class="text-center">
+            <h2 class="display-5 text-zumthor fw-bold mb-3">Join the Global Exploration</h2>
+            <p class="lead text-gray-chateau mb-4 mx-auto" style="max-width: 600px;">
+                Start discovering flowering patterns and support citizen science. Together, we protect life from pollinators to global food security.
+            </p>
+            <a class="btn btn-azure-radiance btn-lg px-5 py-3 rounded-pill shadow-lg" asp-controller="Mapa" asp-action="Index">
+                <i class="fa-solid fa-rocket me-2"></i>
+                Explore Now
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Chatbot Modal (placeholder) -->
+<div class="modal fade" id="chatbotModal" tabindex="-1" aria-labelledby="chatbotModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-bunker border-mako">
+            <div class="modal-header border-mako">
+                <h5 class="modal-title text-zumthor" id="chatbotModalLabel">
+                    <i class="fa-solid fa-robot me-2 text-azure-radiance"></i>
+                    BloomBot Assistant
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-gray-chateau text-center">Chatbot integration coming soon...</p>
+            </div>
+        </div>
+    </div>
+</div>

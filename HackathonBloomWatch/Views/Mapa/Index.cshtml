@@ -1,0 +1,915 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMapa.cshtml";
+    ViewData["Title"] = "Mapa";
+}
+
+@section Filtros {
+    <div>
+        <h5 class="text-center mb-3 text-zumthor">Filtrar información</h5>
+        <div>
+            <p class="text-gray-chateau fw-bold">
+                <i class="fa-solid fa-diagram-project text-cream-can"></i> Campaña
+            </p>
+            <div class="form-floating mb-3">
+                <select id="campania" class="form-select" asp-items="ViewBag.Campanias"></select>
+                <label for="campania" class="form-label">Campaña</label>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="text-gray-chateau fw-bold mb-0">
+                    <i class="fa-solid fa-map-location-dot text-cream-can"></i> Localización
+                </p>
+                <button class="btn btn-sm btn-secondary" onclick="resetearSelects()">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select id="provincia" class="form-select" asp-items="ViewBag.Provincias">
+                    <option value="" selected disabled>Seleccione la provincia</option>
+                </select>
+                <label for="provincia" class="form-label">Provincia</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select id="distrito" class="form-select">
+                    <option value="" selected disabled>Seleccione el distrito</option>
+                </select>
+                <label for="distrito" class="form-label">Distrito</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select id="localidad" class="form-select">
+                    <option value="" selected disabled>Seleccione la localidad</option>
+                </select>
+                <label for="localidad" class="form-label">Localidad</label>
+            </div>
+
+
+
+
+
+
+
+            <!-- Checkbox mejorado -->
+            <div class="card bg-bunker-muted border-mako mb-3">
+                <div class="card-body py-3 px-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="toggleLandsat" style="cursor: pointer;">
+                        <label class="form-check-label text-gray-chateau ms-2" for="toggleLandsat" style="cursor: pointer;">
+                            <i class="fa-solid fa-satellite me-2 text-cream-can"></i>
+                            Mostrar capa Landsat
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Ir a Cajamarca -->
+            <div class="d-grid gap-2 mb-3">
+                <button class="btn btn-outline-primary btn-lg" onclick="zoomToCajamarca()">
+                    <i class="fa-solid fa-location-crosshairs me-2"></i>
+                    Ir a Cajamarca
+                </button>
+            </div>
+
+
+
+
+
+
+
+
+
+            <div class="d-flex justify-content-between mb-3">
+                <a class="btn btn-secondary" type="button" asp-action="Index">
+                    <i class="fa-solid fa-arrow-rotate-right"></i> Reset
+                </a>
+                <button id="btnRecargarMapa" class="btn btn-success" type="button" onclick="cargarCampaniaDetalle()">
+                    <i class="fa-solid fa-sliders"></i> Filtrar
+                </button>
+            </div>
+            <div id="spinnerCargando" class="text-center">
+                <div class="spinner-border text-azure-radiance" role="status">
+                    <span class="visually-hidden">Cargando mapa...</span>
+                </div>
+                <p class="text-azure-radiance mt-1">Cargando mapa...</p>
+            </div>
+            <div class="d-none" id="contenedorNumRegistros">
+                <p class="text-gray-chateau fw-bold mb-0">
+                    <i class="fa-solid fa-tree text-cream-can"></i> <span id="textNumRegistros"></span> <span
+                        class="text-green-500" id="numRegistros"></span> registros
+                </p>
+            </div>
+        </div>
+    </div>
+}
+
+<div id="contenedorMapa">
+    <div id="map" class="min-vh-100"></div>
+</div>
+
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-xl">
+        <div class="modal-content bg-bunker border-default">
+            <div class="modal-header border-default">
+                <h5 class="modal-title text-zumthor" id="modalLabel">Detalle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="text-gray-chateau fw-bold mt-3">
+                            <i class="fa-solid fa-diagram-project text-cream-can"></i> Detalle del registro
+                        </p>
+                        <div class="d-flex flex-column bg-bunker-muted border-default p-3 rounded-3">
+                            <span class="text-gray-chateau">
+                                Actividad
+                            </span>
+                            <span class="mt-1 text-salem fw-bold" id="modalTipoActividad"></span>
+                            <span class="mt-3 text-gray-chateau">
+                                Estado
+                            </span>
+                            <span class="mt-1 text-salem fw-bold" id="modalEstado"></span>
+                            <span class="mt-3 text-gray-chateau">
+                                Fecha de actividad
+                            </span>
+                            <span class="mt-1 text-salem fw-bold" id="modalFechaActividad"></span>
+                        </div>
+                        <p class="text-gray-chateau fw-bold mt-3">
+                            <i class="fa-solid fa-location-dot text-cream-can"></i> Información de localización
+                        </p>
+                        <div class="d-flex flex-column bg-bunker-muted border-default p-3 rounded-3">
+                            <span class="text-gray-chateau">
+                                Provincia
+                            </span>
+                            <span class="mt-1 text-salem fw-bold" id="modalProvincia"></span>
+                            <span class="mt-3 text-gray-chateau">
+                                Distrito
+                            </span>
+                            <span class="mt-1 text-salem fw-bold" id="modalDistrito"></span>
+                            <span class="mt-3 text-gray-chateau">
+                                Localidad
+                            </span>
+                            <span class="mt-1 text-salem fw-bold" id="modalLocalidad"></span>
+                            <span class="mt-3 text-gray-chateau">
+                                Área (ha)
+                            </span>
+                            <span class="mt-1 text-salem fw-bold" id="modalArea"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="text-gray-chateau fw-bold mt-3">
+                            <i class="fa-brands fa-pagelines text-cream-can"></i> Especie de Planta
+                        </p>
+                        <div class="d-flex flex-column bg-bunker-muted border-default p-3 rounded-3">
+                            <div id="modalImagenContainer" class="text-center">
+                                <img id="modalImagen" src="" alt="Imagen de especie"
+                                    style="max-width: 100%; max-height: 250px;" />
+                            </div>
+                            <span class="mt-3 text-gray-chateau">
+                                Nombre Científico
+                            </span>
+                            <span class="mt-1 text-salem fw-bold" id="modalNombreEspecie"></span>
+                            <span class="mt-3 text-gray-chateau">
+                                Nombre Común
+                            </span>
+                            <span class="mt-1 text-salem fw-bold" id="modalNombreComun"></span>
+                            <span class="mt-3 text-gray-chateau">
+                                Cantidad de Elementos
+                            </span>
+                            <span class="mt-1 text-salem fw-bold" id="modalCantidadElementos"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="estadisticaModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-xl">
+        <div class="modal-content bg-bunker border-default">
+            <div class="modal-header border-default">
+                <h5 class="modal-title text-zumthor" id="modalLabel">Estadísticas - <span id="tituloModal"
+                        class="fw-bold"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div id="spinnerEstadisticas" class="text-center">
+                    <div class="spinner-border text-azure-radiance" role="status">
+                        <span class="visually-hidden">Cargando Estadísticas...</span>
+                    </div>
+                    <p class="text-azure-radiance mt-1">Cargando Estadísticas...</p>
+                </div>
+                <div id="contenedorEstadisticas" class="d-none">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="bg-bunker-muted border-default p-3 rounded-3">
+                                <p class="d-flex justify-content-between text-zumthor">Macizos Forestales <i
+                                        class="fa-solid fa-earth-americas text-cream-can"></i></p>
+                                <div class="d-flex flex-column">
+                                    <span class="text-gray-chateau">
+                                        Plantación
+                                    </span>
+                                    <span class="text-salem display-6" id="totalMacizosPlantacion">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-bunker-muted border-default p-3 rounded-3">
+                                <p class="d-flex justify-content-between text-zumthor">Área total (ha) <i
+                                        class="fa-solid fa-draw-polygon text-cream-can"></i></p>
+                                <div class="d-flex flex-column">
+                                    <span class="text-gray-chateau">
+                                        Plantación
+                                    </span>
+                                    <span class="text-salem display-6" id="areaPlantaciones">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="bg-bunker-muted border-default p-3 rounded-3">
+                                <p class="d-flex justify-content-between text-zumthor">Cantidad Elementos <i
+                                        class="fa-solid fa-tree text-cream-can"></i></p>
+                                <div class="d-flex flex-column">
+                                    <span class="text-gray-chateau">
+                                        Plantación
+                                    </span>
+                                    <span class="text-salem display-6" id="cantidadElementosPlantacion">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex">
+                        <div class="mx-auto" style="max-width:750px;">
+                            <div class="bg-bunker-muted border-default p-3 text-zumthor rounded-3"
+                                style="aspect-ratio: 2 / 1;">
+                                <canvas id="chartPlantaciones" class="w-100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Scripts {
+
+
+
+
+
+
+    <script>
+        // 🔑 Tu access token de Mapbox
+        const accessToken = "pk.eyJ1IjoicnJvZHJpZ3VlemMyMjAiLCJhIjoiY21nN2kyMTEwMDBqNTJrcHJhdjFlbTVvdSJ9.iStUqhuABLA-eoPR8XhGdA";
+
+        mapboxgl.accessToken = accessToken;
+
+        const map = new mapboxgl.Map({
+            container: "map",
+            style: "mapbox://styles/mapbox/dark-v11",
+            center: [0, 0],
+            zoom: 1,
+            pitch: 0,
+            bearing: 0
+        });
+
+        // Agregar controles de navegación
+        map.addControl(new mapboxgl.NavigationControl());
+
+        // Variables globales
+        let currentBaseStyle = { color: "#3d3d3d", width: 1, opacity: 0.1 };
+        let currentHoverStyle = { color: "#2F3EAC", width: 1, opacity: 0.1 };
+
+        const CAPAS = {
+            REGION: 'region-cajamarca',
+            PROVINCIAS: 'provincias-cajamarca',
+            DISTRITOS: 'distritos-cajamarca',
+            CAMPANIA: 'campania-detalle'
+        };
+
+        let capasEstativasCargadas = 0;
+        const totalCapasEstaticas = 3;
+
+        // ========== EVENTO PRINCIPAL DE CARGA DEL MAPA ==========
+        map.on('load', () => {
+            console.log("✅ Mapa cargado exitosamente");
+
+            // Agregar la imagen Landsat
+            map.addSource('landsat', {
+                type: 'image',
+                url: '/img/tiff/mosaico.png',
+                coordinates: [
+                    [-78.98422252064033, -6.603264747221193],
+                    [-78.23083275404345, -6.599646041039277],
+                    [-78.22695301600288, -7.263337130582817],
+                    [-78.98139624476306, -7.2673233536241195]
+                ]
+            });
+
+            map.addLayer({
+                id: 'landsat-layer',
+                type: 'raster',
+                source: 'landsat',
+                paint: { 'raster-opacity': 0.6 },
+                layout: { visibility: 'none' }
+            });
+
+            console.log("✅ Imagen Landsat agregada");
+
+            // Cargar las capas GeoJSON
+            cargarGeoJSON('/geoJson/region_cajamarca.json', CAPAS.REGION, false);
+            cargarGeoJSON('/geoJson/provincias_cajamarca.json', CAPAS.PROVINCIAS, false);
+            cargarGeoJSON('/geoJson/distritos_cajamarca.json', CAPAS.DISTRITOS, false);
+        });
+
+        // Listener del checkbox Landsat
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleLandsat = document.getElementById('toggleLandsat');
+            if (toggleLandsat) {
+                toggleLandsat.addEventListener('change', function () {
+                    if (map.loaded() && map.getLayer('landsat-layer')) {
+                        map.setLayoutProperty('landsat-layer', 'visibility', this.checked ? 'visible' : 'none');
+                    }
+                });
+            }
+        });
+
+        // ========== FUNCIÓN ZOOM A CAJAMARCA ==========
+        function zoomToCajamarca() {
+            const cajamarcaCoords = [-78.512, -7.161];
+
+            map.flyTo({
+                center: cajamarcaCoords,
+                zoom: 9,
+                speed: 0.8,
+                curve: 1.5
+            });
+
+            if (!window.cajamarcaMarker) {
+                const el = document.createElement('div');
+                el.className = 'marker-cajamarca';
+                el.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e74c3c">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+                </svg>
+            `;
+                el.style.width = '36px';
+                el.style.height = '36px';
+                el.style.display = 'flex';
+                el.style.alignItems = 'center';
+                el.style.justifyContent = 'center';
+                el.style.cursor = 'pointer';
+                el.style.filter = 'drop-shadow(0px 1px 2px rgba(0,0,0,0.4))';
+
+                window.cajamarcaMarker = new mapboxgl.Marker(el)
+                    .setLngLat(cajamarcaCoords)
+                    .setPopup(new mapboxgl.Popup().setHTML('<b>Cajamarca</b> 📍'))
+                    .addTo(map);
+            }
+        }
+
+        // ========== FUNCIONES DE CARGA ==========
+        function cargarGeoJSON(url, capaId, ajustarZoom = false) {
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`📍 Cargando capa: ${capaId}`, data);
+
+                    if (!map.getSource(capaId + '-source')) {
+                        map.addSource(capaId + '-source', {
+                            type: 'geojson',
+                            data: data
+                        });
+                    }
+
+                    if (!map.getLayer(capaId + '-fill')) {
+                        map.addLayer({
+                            id: capaId + '-fill',
+                            type: 'fill',
+                            source: capaId + '-source',
+                            paint: {
+                                'fill-color': currentBaseStyle.color,
+                                'fill-opacity': currentBaseStyle.opacity
+                            },
+                            layout: { 'visibility': 'none' }
+                        });
+                    }
+
+                    if (!map.getLayer(capaId + '-outline')) {
+                        map.addLayer({
+                            id: capaId + '-outline',
+                            type: 'line',
+                            source: capaId + '-source',
+                            paint: {
+                                'line-color': currentBaseStyle.color,
+                                'line-width': currentBaseStyle.width
+                            },
+                            layout: { 'visibility': 'none' }
+                        });
+                    }
+
+                    agregarEtiquetas(capaId, data);
+
+                    if (ajustarZoom && data.features && data.features.length > 0) {
+                        try {
+                            const bounds = turf.bbox(data);
+                            map.fitBounds(bounds, { padding: 50 });
+                        } catch (e) {
+                            console.error("Error ajustando zoom:", e);
+                        }
+                    }
+
+                    capasEstativasCargadas++;
+                    console.log(`✅ Capa ${capaId} cargada (${capasEstativasCargadas}/${totalCapasEstaticas})`);
+
+                    if (capasEstativasCargadas === totalCapasEstaticas) {
+                        console.log("✅ Todas las capas cargadas, inicializando eventos");
+                        inicializarEventos();
+                    }
+                })
+                .catch(error => {
+                    console.error(`❌ Error cargando ${capaId}:`, error);
+                });
+        }
+
+        function agregarEtiquetas(capaId, data) {
+            if (!map.getLayer(capaId + '-labels')) {
+                map.addLayer({
+                    id: capaId + '-labels',
+                    type: 'symbol',
+                    source: capaId + '-source',
+                    layout: {
+                        'text-field': ['coalesce',
+                            ['get', 'NOMB_DIST'],
+                            ['get', 'NOMB_PROV'],
+                            'CAJAMARCA'
+                        ],
+                        'text-size': 12,
+                        'text-anchor': 'center',
+                        'visibility': 'none'
+                    },
+                    paint: {
+                        'text-color': '#000000',
+                        'text-halo-color': '#ffffff',
+                        'text-halo-width': 2
+                    }
+                });
+            }
+        }
+
+        function inicializarEventos() {
+            configurarEventosZoom();
+            configurarEventosInteraccion();
+            cargarCampaniaDetalle();
+        }
+
+        function configurarEventosInteraccion() {
+            const capas = [CAPAS.REGION, CAPAS.PROVINCIAS, CAPAS.DISTRITOS];
+
+            capas.forEach(capa => {
+                const fillLayerId = capa + '-fill';
+
+                if (!map.getLayer(fillLayerId)) return;
+
+                map.on('mouseenter', fillLayerId, function () {
+                    map.getCanvas().style.cursor = 'pointer';
+                });
+
+                map.on('mouseleave', fillLayerId, function () {
+                    map.getCanvas().style.cursor = '';
+                    map.setPaintProperty(fillLayerId, 'fill-color', currentBaseStyle.color);
+                });
+
+                map.on('mousemove', fillLayerId, function (e) {
+                    if (e.features.length > 0) {
+                        map.setPaintProperty(fillLayerId, 'fill-color', currentHoverStyle.color);
+                    }
+                });
+
+                map.on('click', fillLayerId, function (e) {
+                    const campaniaFeatures = map.queryRenderedFeatures(e.point, {
+                        layers: [CAPAS.CAMPANIA + '-fill']
+                    });
+
+                    if (campaniaFeatures && campaniaFeatures.length > 0) return;
+
+                    if (e.features.length > 0) {
+                        const feature = e.features[0];
+                        const properties = feature.properties;
+
+                        let nivelLugar = "Departamento";
+                        let nombreLugar = "CAJAMARCA";
+
+                        if (properties.NOMB_DIST) {
+                            nivelLugar = "Distrito";
+                            nombreLugar = properties.NOMB_DIST;
+                        } else if (properties.NOMB_PROV) {
+                            nivelLugar = "Provincia";
+                            nombreLugar = properties.NOMB_PROV;
+                        }
+
+                        mostrarEstadisticas(nivelLugar, nombreLugar);
+                    }
+                });
+            });
+        }
+
+        function mostrarEstadisticas(nivelLugar, nombreLugar) {
+            $("#contenedorEstadisticas").addClass("d-none");
+            $("#spinnerEstadisticas").removeClass("d-none");
+            $("#estadisticaModal").modal("show");
+
+            var idCampania = $('#campania').val();
+
+            $.ajax({
+                url: '@Url.Action("GetEstadisticaLugar", "Mapa")',
+                data: {
+                    idCampania: idCampania,
+                    nivelLugar: nivelLugar,
+                    nombreLugar: nombreLugar
+                },
+                success: function (dataEstadisticas) {
+                    $("#tituloModal").text(nivelLugar + " " + nombreLugar);
+                    $("#totalMacizosPlantacion").text(dataEstadisticas.totalMacizosPlantacion);
+                    $("#cantidadElementosPlantacion").text(dataEstadisticas.cantidadElementosPlantacion);
+                    $("#areaPlantaciones").text(dataEstadisticas.areaPlantaciones);
+
+                    generarGrafico(
+                        'chartPlantaciones',
+                        dataEstadisticas.labelEspeciesPlantaciones,
+                        dataEstadisticas.dataPlantaciones,
+                        '#00B00A',
+                        'Cantidad de Plantaciones'
+                    );
+
+                    $("#spinnerEstadisticas").addClass("d-none");
+                    $("#contenedorEstadisticas").removeClass("d-none");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar estadísticas:", error);
+                }
+            });
+        }
+
+        function generarGrafico(idCanvas, etiquetas, datos, colorFondo, etiqueta) {
+            const ctx = document.getElementById(idCanvas);
+
+            if (ctx.chartInstance) {
+                ctx.chartInstance.destroy();
+            }
+
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: etiquetas,
+                    datasets: [{
+                        label: etiqueta,
+                        data: datos,
+                        backgroundColor: colorFondo
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: etiqueta + " por Especies de Plantas",
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function (ctx) {
+                                    return `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('es-PE')}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return value.toLocaleString('es-PE');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            ctx.chartInstance = chart;
+        }
+
+        function cargarCampaniaDetalle() {
+            var idCampania = $('#campania').val();
+            var provincia = $('#provincia').val();
+            var distrito = $('#distrito').val();
+            var localidad = $('#localidad').val();
+
+            $("#contenedorNumRegistros").addClass("d-none");
+            $("#spinnerCargando").removeClass("d-none");
+
+            $.ajax({
+                url: '@Url.Action("GetCampaniaGeoJson", "Mapa")',
+                data: {
+                    idCampania: idCampania,
+                    provincia: provincia,
+                    distrito: distrito,
+                    localidad: localidad
+                },
+                success: function (geoJsonData) {
+                    actualizarCampaniaDetalleLayer(geoJsonData);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar el mapa:", error);
+                    $("#spinnerCargando").addClass("d-none");
+                }
+            });
+        }
+
+        function actualizarCampaniaDetalleLayer(geoJsonData) {
+            if (map.getLayer(CAPAS.CAMPANIA + '-fill')) {
+                map.removeLayer(CAPAS.CAMPANIA + '-fill');
+            }
+            if (map.getLayer(CAPAS.CAMPANIA + '-outline')) {
+                map.removeLayer(CAPAS.CAMPANIA + '-outline');
+            }
+            if (map.getSource(CAPAS.CAMPANIA + '-source')) {
+                map.removeSource(CAPAS.CAMPANIA + '-source');
+            }
+
+            let featureCollection;
+
+            if (!geoJsonData || geoJsonData.length === 0) {
+                featureCollection = {
+                    type: 'FeatureCollection',
+                    features: []
+                };
+            } else if (Array.isArray(geoJsonData)) {
+                const validFeatures = geoJsonData.filter(item =>
+                    item && item.geometry && item.geometry.coordinates
+                );
+
+                featureCollection = {
+                    type: 'FeatureCollection',
+                    features: validFeatures
+                };
+            } else if (geoJsonData.type === 'FeatureCollection') {
+                featureCollection = geoJsonData;
+            } else if (geoJsonData.geometry) {
+                featureCollection = {
+                    type: 'FeatureCollection',
+                    features: [geoJsonData]
+                };
+            } else {
+                featureCollection = {
+                    type: 'FeatureCollection',
+                    features: []
+                };
+            }
+
+            map.addSource(CAPAS.CAMPANIA + '-source', {
+                type: 'geojson',
+                data: featureCollection
+            });
+
+            map.addLayer({
+                id: CAPAS.CAMPANIA + '-fill',
+                type: 'fill',
+                source: CAPAS.CAMPANIA + '-source',
+                paint: {
+                    'fill-color': [
+                        'case',
+                        ['!=', ['get', 'estadoActividad'], 'Hoyada'],
+                        '#B00000',
+                        '#DB3A33'
+                    ],
+                    'fill-opacity': 0.3
+                }
+            });
+
+            map.addLayer({
+                id: CAPAS.CAMPANIA + '-outline',
+                type: 'line',
+                source: CAPAS.CAMPANIA + '-source',
+                paint: {
+                    'line-color': [
+                        'case',
+                        ['!=', ['get', 'estadoActividad'], 'Hoyada'],
+                        '#B00000',
+                        '#DB3A33'
+                    ],
+                    'line-width': 1
+                }
+            });
+
+            map.on('click', CAPAS.CAMPANIA + '-fill', function (e) {
+                if (e.features.length > 0) {
+                    e.preventDefault();
+
+                    const props = e.features[0].properties;
+
+                    $("#modalTipoActividad").text(props.tipoActividad || '');
+                    $("#modalEstado").text(props.estadoActividad || '');
+                    $("#modalFechaActividad").text(props.fechaActividad || '');
+                    $("#modalCantidadElementos").text(props.cantidadElementos || '');
+                    $("#modalNombreEspecie").text(props.nombreEspecie || '');
+                    $("#modalProvincia").text(props.provincia || '');
+                    $("#modalDistrito").text(props.distrito || '');
+                    $("#modalArea").text(props.areaHectareas || '');
+                    $("#modalLocalidad").text(props.localidad || '');
+                    $("#modalNombreComun").text(props.nombreComun || '');
+
+                    const imagenUrl = props.imagenEspecie;
+                    if (imagenUrl) {
+                        $("#modalImagen").attr("src", imagenUrl);
+                        $("#modalImagenContainer").css("display", "block");
+                    } else {
+                        $("#modalImagenContainer").css("display", "none");
+                    }
+                    $("#detalleModal").modal("show");
+                }
+            });
+
+            map.on('mouseenter', CAPAS.CAMPANIA + '-fill', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.on('mouseleave', CAPAS.CAMPANIA + '-fill', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+            if (featureCollection.features.length > 0) {
+                try {
+                    const bounds = turf.bbox(featureCollection);
+                    map.fitBounds(bounds, { padding: 50, duration: 1000 });
+                } catch (e) {
+                    console.error("Error al calcular bounds:", e);
+                    if (map.getSource(CAPAS.REGION + '-source')) {
+                        const regionSource = map.getSource(CAPAS.REGION + '-source');
+                        const regionData = regionSource._data;
+                        if (regionData && regionData.features) {
+                            try {
+                                const regionBounds = turf.bbox(regionData);
+                                map.fitBounds(regionBounds, { padding: 50, duration: 1000 });
+                            } catch (err) {
+                                console.error("Error ajustando a región:", err);
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (map.getSource(CAPAS.REGION + '-source')) {
+                    const regionSource = map.getSource(CAPAS.REGION + '-source');
+                    const regionData = regionSource._data;
+                    if (regionData && regionData.features) {
+                        try {
+                            const regionBounds = turf.bbox(regionData);
+                            map.fitBounds(regionBounds, { padding: 50, duration: 1000 });
+                        } catch (err) {
+                            console.error("Error ajustando a región:", err);
+                        }
+                    }
+                }
+            }
+
+            $("#spinnerCargando").addClass("d-none");
+            const numRegistros = featureCollection.features.length;
+
+            if (numRegistros > 0) {
+                $("#numRegistros").text(numRegistros);
+                $("#textNumRegistros").text("Se encontraron");
+            } else {
+                $("#numRegistros").text("");
+                $("#textNumRegistros").text("No se encontraron");
+            }
+            $("#contenedorNumRegistros").removeClass("d-none");
+        }
+
+        function configurarEventosZoom() {
+            map.on('zoom', function () {
+                const zoomLevel = map.getZoom();
+
+                [CAPAS.REGION, CAPAS.PROVINCIAS, CAPAS.DISTRITOS].forEach(capa => {
+                    if (map.getLayer(capa + '-fill')) {
+                        map.setLayoutProperty(capa + '-fill', 'visibility', 'none');
+                    }
+                    if (map.getLayer(capa + '-outline')) {
+                        map.setLayoutProperty(capa + '-outline', 'visibility', 'none');
+                    }
+                    if (map.getLayer(capa + '-labels')) {
+                        map.setLayoutProperty(capa + '-labels', 'visibility', 'none');
+                    }
+                });
+
+                let capaActiva = null;
+                if (zoomLevel <= 8) {
+                    capaActiva = CAPAS.REGION;
+                } else if (zoomLevel > 8 && zoomLevel <= 9) {
+                    capaActiva = CAPAS.PROVINCIAS;
+                } else if (zoomLevel > 9) {
+                    capaActiva = CAPAS.DISTRITOS;
+                }
+
+                if (capaActiva) {
+                    if (map.getLayer(capaActiva + '-fill')) {
+                        map.setLayoutProperty(capaActiva + '-fill', 'visibility', 'visible');
+                    }
+                    if (map.getLayer(capaActiva + '-outline')) {
+                        map.setLayoutProperty(capaActiva + '-outline', 'visibility', 'visible');
+                    }
+                    if (map.getLayer(capaActiva + '-labels')) {
+                        map.setLayoutProperty(capaActiva + '-labels', 'visibility', 'visible');
+                    }
+                }
+            });
+
+            map.fire('zoom');
+        }
+
+        $('#provincia').change(function () {
+            var provincia = $('#provincia').val();
+
+            $.getJSON('@Url.Action("GetDistritos", "Mapa")', {
+                provincia: provincia
+            }, function (data) {
+                var items = '<option disabled selected value="">Seleccione el distrito</option>';
+                $.each(data, function (i, distrito) {
+                    items += "<option value='" + distrito + "'>" + distrito + "</option>";
+                });
+                $('#distrito').html(items);
+                $('#localidad').html('<option disabled selected value="">Seleccione la localidad</option>');
+            });
+        });
+
+        $('#distrito').change(function () {
+            var distrito = $('#distrito').val();
+
+            $.getJSON('@Url.Action("GetLocalidades", "Mapa")', {
+                distrito: distrito
+            }, function (data) {
+                var items = '<option disabled selected value="">Seleccione la localidad</option>';
+                $.each(data, function (i, localidad) {
+                    items += "<option value='" + localidad + "'>" + localidad + "</option>";
+                });
+                $('#localidad').html(items);
+            });
+        });
+
+        function resetearSelects() {
+            $('#provincia').val('');
+            $('#distrito').val('');
+            $('#localidad').val('');
+            $('#distrito').html('<option disabled selected value="">Seleccione el distrito</option>');
+            $('#localidad').html('<option disabled selected value="">Seleccione la localidad</option>');
+        }
+
+        function cambiarEstiloMapa(estilo) {
+            const estilos = {
+                'streets': 'mapbox://styles/mapbox/streets-v12',
+                'satellite': 'mapbox://styles/mapbox/satellite-v9',
+                'outdoors': 'mapbox://styles/mapbox/outdoors-v12',
+                'dark': 'mapbox://styles/mapbox/dark-v11'
+            };
+
+            map.setStyle(estilos[estilo] || estilos['streets']);
+
+            if (estilo === 'satellite') {
+                currentBaseStyle = { color: "#e6e6e6", width: 1, opacity: 0.1 };
+                currentHoverStyle = { color: "#37f0c5", width: 1, opacity: 0.1 };
+            } else {
+                currentBaseStyle = { color: "#3d3d3d", width: 1, opacity: 0.1 };
+                currentHoverStyle = { color: "#2fac66", width: 1, opacity: 0.1 };
+            }
+        }
+    </script>
+
+
+
+
+
+
+
+
+
+}
